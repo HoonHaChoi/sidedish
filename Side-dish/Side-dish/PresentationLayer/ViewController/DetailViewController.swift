@@ -12,7 +12,7 @@ class DetailViewController: UIViewController {
     
     private var detailItem : Item!
     private var cancellable = Set<AnyCancellable>()
-    private var detailViewModel: DetailViewModelProtocol!
+    private var detailViewModel: DetailViewModelProtocol?
     private var sideDishAmountViewModel:SideDishAmountViewModel!
     
     @IBOutlet weak var orderButton: OrderButton!
@@ -28,14 +28,14 @@ class DetailViewController: UIViewController {
         bind()
     }
     
-    func bind() {
-        detailViewModel.didFetchDetails().sink { [weak self] (itemDetail) in
+    private func bind() {
+        detailViewModel?.didFetchDetails().sink { [weak self] (itemDetail) in
             self?.detailContentView.thumbImageLoad(images: itemDetail.thumbImages)
             self?.detailContentView.desctionImageLoad(desctionImage: itemDetail.detailSection)
             self?.detailContentView.deliveryInfoConfigure(with: itemDetail)
         }.store(in: &cancellable)
         
-        detailViewModel.except().sink { [weak self] (error) in
+        detailViewModel?.except().sink { [weak self] (error) in
             self?.triggerAlert(by: error)
         }.store(in: &cancellable)
         
@@ -52,7 +52,7 @@ class DetailViewController: UIViewController {
             self?.detailContentView.amountConfigure(amount: amount, total: totalPrice)
         }.store(in: &cancellable)
         
-        detailViewModel.successOrderBind()
+        detailViewModel?.successOrderBind()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.triggerAlert(by: "주문이 완료되었습니다")
@@ -75,7 +75,7 @@ class DetailViewController: UIViewController {
     }
     
     @IBAction func OrderButtonTouched(_ sender: UIButton) {
-        self.detailViewModel.orderSideDish(title: detailItem.title,
+        self.detailViewModel?.orderSideDish(title: detailItem.title,
                                            sPrice: detailItem.sPrice)
     }
 }

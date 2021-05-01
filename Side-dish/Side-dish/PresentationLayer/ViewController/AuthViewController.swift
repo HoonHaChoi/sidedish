@@ -32,10 +32,8 @@ class AuthViewController: UIViewController, ASWebAuthenticationPresentationConte
     }
     
     @IBAction func loginButton(_ sender: UIButton) {
-        guard let url = config.authenticate()?.addQueryItem(key: redirectURL, value: redirectValue) else {
-            return
-        }
-        
+        guard let url = URL(string: "https://github.com/login/oauth/authorize?client_id=\(getGitHubKey(type: .clientKey))&scope=repo") else { return }
+
         webAuthSession = ASWebAuthenticationSession.init(url: url, callbackURLScheme: callbackUrlScheme, completionHandler: { [weak self] (callBack:URL?, error:Error?) in
             
             guard error == nil else {

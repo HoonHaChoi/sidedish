@@ -10,7 +10,7 @@ import Combine
 
 protocol NetworkManageable {
     func requestResource<T, U: Decodable>(path: T, method: HTTPMethod, deocdeType: U.Type) -> AnyPublisher<U, NetworkError>
-    func requestOrder(method: HTTPMethod, body: Data) -> AnyPublisher<Int, NetworkError>
+    func requestOrder(method: HTTPMethod, body: Data) -> AnyPublisher<Void, NetworkError>
 }
 
 final class NetworkManager: NetworkManageable {
@@ -22,7 +22,7 @@ final class NetworkManager: NetworkManageable {
         return request(urlRequest: urlRequest, type: deocdeType)
     }
     
-    func requestOrder(method: HTTPMethod, body: Data) -> AnyPublisher<Int, NetworkError> {
+    func requestOrder(method: HTTPMethod, body: Data) -> AnyPublisher<Void, NetworkError> {
         guard let urlRequset = makePostURLRequest(method: method, body: body) else {
             return Fail(error: NetworkError.invalidURL).eraseToAnyPublisher()
         }
@@ -49,19 +49,19 @@ final class NetworkManager: NetworkManageable {
             }.eraseToAnyPublisher()
     }
     
-    private func requestPost(urlRequest: URLRequest) -> AnyPublisher<Int, NetworkError> {
+    private func requestPost(urlRequest: URLRequest) -> AnyPublisher<Void, NetworkError> {
         return URLSession.shared.dataTaskPublisher(for: urlRequest)
             .mapError { _ in
                 NetworkError.invalidRequest
             }
-            .tryMap { element -> Int in
+            .tryMap { element -> Void in
                 guard let httpResponse = element.response as? HTTPURLResponse else {
                     throw NetworkError.invalidResponse
                 }
                 guard 200..<300 ~= httpResponse.statusCode else {
                     throw NetworkError.invalidStatusCode(httpResponse.statusCode)
                 }
-                return httpResponse.statusCode
+                return
             }.mapError {
                 $0 as! NetworkError
             }.eraseToAnyPublisher()

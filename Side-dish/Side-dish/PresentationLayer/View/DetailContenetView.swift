@@ -31,10 +31,8 @@ class DetailContenetView: UIView {
     }
     
     func amountConfigure(amount: String, total: String) {
-        DispatchQueue.main.async { [weak self] in
-            self?.amountLabel.text = amount
-            self?.totalPrice.text = total
-        }
+        self.amountLabel.text = amount
+        self.totalPrice.text = total
     }
     
     func deliveryInfoConfigure(with itemData: ItemData) {

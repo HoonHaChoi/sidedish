@@ -11,7 +11,7 @@ import Combine
 protocol SideDishProtocol {
     func requestSideDishes(path: Menu) -> AnyPublisher<SideDishes, NetworkError>
     func requestItemDetails(detailHash: String) -> AnyPublisher<ItemDetails, NetworkError>
-    func requestOrder(body: Data) -> AnyPublisher<Int, NetworkError>
+    func requestOrder(body: Data) -> AnyPublisher<Void, NetworkError>
 }
 
 final class SideDishUseCase: SideDishProtocol {
@@ -30,7 +30,7 @@ final class SideDishUseCase: SideDishProtocol {
         return networkManager.requestResource(path: detailHash, method: .get, deocdeType: ItemDetails.self)
     }
     
-    func requestOrder(body: Data) -> AnyPublisher<Int, NetworkError> {
+    func requestOrder(body: Data) -> AnyPublisher<Void, NetworkError> {
         return networkManager.requestOrder(method: .post, body: body)
     }
 }
